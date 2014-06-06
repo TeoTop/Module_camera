@@ -1,0 +1,15 @@
+#!/bin/bash
+folder=`pwd`;
+echo "Compiling $1"
+if [[ $1 == *.c ]]
+then
+	echo "File C ...";
+	gcc -ggdb `pkg-config --cflags opencv` -o `basename $1 .c` $folder"/"$1 `pkg-config --libs opencv`;
+elif [[ $1 == *.cpp ]]
+then
+echo "File Cpp ...";
+	g++ -L/usr/lib/uv4l/uv4lext/armv6l -luv4lext -Wl,-rpath,'/usr/lib/uv4l/uv4lext/armv6l' "-std=c++0x" -ggdb `pkg-config --cflags opencv` -o `basename $1 .cpp` $folder"/"$1 `pkg-config --libs opencv` `mysql_config --cflags --libs`;
+else
+	echo "Please compile only .c or .cpp files"
+fi
+echo "Output file => ${1%.*} <= PATH : ${folder}";

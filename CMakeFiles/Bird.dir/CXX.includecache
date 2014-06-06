@@ -1,0 +1,38 @@
+#IncludeRegexLine: ^[ 	]*#[ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/pi/opencv/testOpenCV.cpp
+opencv2/opencv.hpp
+-
+iostream
+-
+vector
+-
+string
+-
+stdio.h
+-
+time.h
+-
+unistd.h
+-
+stdlib.h
+-
+cmath
+-
+math.h
+-
+map
+-
+iterator
+-
+list
+-
+algorithm
+-
+

@@ -14,7 +14,7 @@
 #include <algorithm>
 using namespace cv;
 using namespace std;
-#define XSEC 1
+#define XSEC 3
 
 //motionTracking.cpp
 
@@ -46,8 +46,8 @@ bool test = false;
 int cameraWidth;
 int cameraHeight;
 string rasp = "1";
-//string path = "/mnt/upload/";
-string path = "";
+string path = "/mnt/upload/";
+//string path = "";
 //bounding rectangle of the object, we will use the center of this as its position.
 Rect objectBoundingRectangle = Rect(0,0,0,0);
 //structure color
@@ -171,8 +171,7 @@ void searchForMovement(Mat thresholdImage, Mat &cameraFeed){
   		//si > 1/3 taille de la camera 
 		  if(diftime >= XSEC && objectBoundingRectangle.width >= cameraWidth/4 && objectBoundingRectangle.height >= cameraHeight/4) {
 		    time(&timer1);
-		    
-		    /*****/
+		   /*****/
 		    //extract region which moved
 		    vector<Mat> subregions;
 	        Mat contourRegion;
@@ -205,7 +204,7 @@ void searchForMovement(Mat thresholdImage, Mat &cameraFeed){
 		    compression_params.push_back(9);//9 higher compression
 		    Mat smallImage = cv::Mat(cameraFeed, objectBoundingRectangle).clone();
 		    //imshow("image",smallImage);
-			cvtColor(contourRegion,contourRegion,CV_BGR2RGB);    
+			cvtColor(contourRegion,contourRegion,CV_BGR2RGB);
 			Color c = dominantColor(contourRegion);
 			//imshow("contour",contourRegion);
 		    struct tm *local_time;
@@ -216,10 +215,11 @@ void searchForMovement(Mat thresholdImage, Mat &cameraFeed){
 		    im_name += id;
 		    int taille = (int)sqrt(((double)objectBoundingRectangle.width)*((double)objectBoundingRectangle.width) + ((double)objectBoundingRectangle.height)*((double)objectBoundingRectangle.height));
 		    string t = "";
-		    if(taille <= 1/3*cameraHeight){
+		    int diagonale = (int)sqrt(pow(cameraHeight,2)+pow(cameraWidth,2));
+		    if(taille <= 1/3*diagonale){
 		    	t += "petit";
 
-		    }else if (taille <=2/3*cameraHeight){
+		    }else if (taille <= 2/3*diagonale){
 		    	t+= "moyen";
 		    }else{
 		    	t+= "grand";
@@ -231,7 +231,7 @@ void searchForMovement(Mat thresholdImage, Mat &cameraFeed){
 		  //cout << moyenneB << endl;
 			cout << path + im_name << endl;
 			Mat imagewrite;
-			cvtColor(smallImage,imagewrite,CV_BGR2RGB);
+			cvtColor(cameraFeed,imagewrite,CV_BGR2RGB);
 		    imwrite(path + im_name, imagewrite, compression_params);
 		    //imwrite(path + im_name, smallImage, compression_params);
 		  }
@@ -292,11 +292,16 @@ int main(){
 
 		cameraWidth = 640;
 		cameraHeight = 480;
+		sleep(5);
+		cout << "5sec after" << endl;
 		//check if the video has reach its last frame.
 		//we add '-1' because we are reading two frames from the video at a time.
 		//if this is not included, we get a memory error!
+
 		 capture.read(frame2);
+
                  //convert frame2 to gray scale for frame differencing
+		
                  cv::cvtColor(frame2,grayImage2,COLOR_BGR2GRAY);
 
 		while(1){
@@ -334,7 +339,6 @@ int main(){
 			}
 
 			//if tracking enabled, search for contours in our thresholded image
-			
 			if(trackingEnabled){
 				searchForMovement(thresholdImage,frame1);
 			}
